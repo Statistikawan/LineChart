@@ -1,0 +1,34 @@
+library(ggplot2)
+library(glue)
+library(gganimate)
+library(openxlsx)
+library(dplyr)
+library(hrbrthemes)
+
+cases1 <- read.xlsx("F:/Penelitian Ekonometrika/covid-19.xlsx", 2)
+cases2 <- read.delim('clipboard')
+cases2
+str(cases2)
+cases1$date <- as.integer(cases2$Date)
+plot_statis <- cases2 %>%
+  ggplot( aes(x=Date, y=Komulatif, group= Kasus, color= Kasus)) +
+  geom_line() +
+  scale_color_viridis_d() +
+  geom_point(aes(group = seq_along(Kasus))) +
+  
+  transition_reveal(Date) +
+  ggtitle("KASUS COVID-19 DI INDONESIA 
+  26 MARET - 29 NOVEMBER 2020
+  TUGAS METODE SURVEI SAMPEL") +
+  labs(x = "Hari", y = "Kasus") +
+  theme_ipsum_tw() +
+  theme(legend.position = "top") +
+  transition_reveal(Date)
+plot_statis
+#Ekspor ke animasi
+library(png)
+library(gifski)
+animate(plot_statis, renderer = gifski_renderer("covid19.gif"))
+
+#ekspor ke video
+animate(plot_statis, 200, fps = 20, width = 1200, height = 1000, renderer = av_renderer("Covid19.mp4"))
